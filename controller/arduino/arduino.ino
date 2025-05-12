@@ -5,7 +5,6 @@
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 // LED pins
-typedef const int;
 const int LED_RED = 10;
 const int LED_YELLOW = 9;
 const int LED_GREEN = 8;
@@ -33,7 +32,6 @@ void loop() {
   int chk = DHT.read11(DHTPIN);
   float temperature = DHT.temperature;
 
-  Serial.print("Temperature = ");
   Serial.println(temperature);
 
   lcd.setCursor(0, 1);
