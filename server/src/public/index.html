@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Temperature Dashboard</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <h1>Live Temperature Dashboard</h1>
+    <div id="stats">
+      <div>Current: <span id="currentTemp">–</span> °C</div>
+      <div>Highest ever: <span id="maxTemp">–</span> °C</div>
+    </div>
+    <canvas id="tempChart"></canvas>
+
+    <!-- libs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
+    <!-- app code -->
+    <script defer src="./app.js"></script>
+  </body>
+</html>

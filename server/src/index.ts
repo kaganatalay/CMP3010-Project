@@ -2,9 +2,13 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import fs from "fs";
 import { logger } from "hono/logger";
+import path from "path";
+import { serveStatic } from "@hono/node-server/serve-static";
 
-const app = new Hono();
+export const app = new Hono();
+
 app.use(logger());
+app.use("/public/*", serveStatic({ root: "./src" }));
 
 const DATA_FILE = "./history.json";
 
@@ -17,6 +21,12 @@ async function initDataFile() {
 }
 
 app.get("/", (c) => c.text("Hello World!"));
+
+// app.get("/dashboard", (c) => {
+//   console.log("Serving dashboard");
+//   const html = fs.readFileSync(path.join("public", "index.html"), "utf-8");
+//   return c.body(html, 200, { "Content-Type": "text/html" });
+// });
 
 app.post("/temperature", async (c) => {
   try {
@@ -35,6 +45,11 @@ app.post("/temperature", async (c) => {
     console.error("Failed to log temperature", err);
     return c.json({ success: false }, 500);
   }
+});
+
+app.get("/history", (c) => {
+  const data = JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
+  return c.json(data);
 });
 
 initDataFile().then(() => {
