@@ -4,14 +4,50 @@
     <meta charset="utf-8" />
     <title>Temperature Dashboard</title>
     <link rel="stylesheet" href="./style.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <h1>Live Temperature Dashboard</h1>
-    <div class="stats">
-      <div>Current: <span class="currentTemp">–</span> °C</div>
-      <div>Highest ever: <span class="maxTemp">–</span> °C</div>
+    <main class="container">
+      <h1>Live Temperature Dashboard</h1>
+
+      <div class="sub">
+        <div class="connectionStatus">
+          <div class="icon inactive"></div>
+          <span class="inactive">Disconnected</span>
+        </div>
+
+        <div class="latestUpdate">
+          <span>Latest update: <strong>-</strong></span>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat current mid">
+          <div class="arrow"></div>
+          <span class="title">Current °C</span>
+          <span class="value">-</span>
+        </div>
+
+        <div class="stat highest">
+          <span class="title">Highest °C</span>
+          <span class="value">-</span>
+        </div>
+      </div>
+
+      <div class="scale">
+        <img src="assets/scale.png" alt="temperature scale" />
+      </div>
+    </main>
+
+    <div class="chartContainer">
+      <canvas class="tempChart"></canvas>
     </div>
-    <canvas class="tempChart"></canvas>
 
     <!-- libs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>

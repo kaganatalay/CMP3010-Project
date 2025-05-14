@@ -15,4 +15,4 @@ const simulator = () => {
     .catch((error) => console.error("Error:", error));
 };
 
-setInterval(simulator, 5000);
+setInterval(simulator, 1000);

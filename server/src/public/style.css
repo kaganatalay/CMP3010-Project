@@ -1,17 +1,166 @@
+:root {
+  --black: #2c3e50;
+  --green: rgb(46, 204, 113);
+  --green-dark: rgb(39, 174, 96);
+  --red: rgb(231, 76, 60);
+  --red-dark: rgb(192, 57, 43);
+  --yellow: rgb(241, 196, 15);
+  --yellow-dark: rgb(243, 156, 18);
+  --orange: rgb(230, 126, 34);
+  --orange-dark: rgb(211, 84, 0);
+}
+
+* {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  color: var(--black);
+  box-sizing: border-box;
+}
+
 body {
-  font-family: sans-serif;
-  max-width: 800px;
+  background-image: url("assets/noise.svg");
+  background-color: rgb(236, 240, 241);
+  overflow-x: hidden;
+}
+
+main {
+  max-width: 1200px;
   margin: auto;
   padding: 1rem;
 }
+
+h1 {
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.sub .connectionStatus {
+  display: flex;
+  align-items: center;
+}
+
+.sub .connectionStatus .icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+}
+
+.sub .connectionStatus .icon.active {
+  background-color: var(--green);
+  border: 3px solid var(--green-dark);
+}
+.sub .connectionStatus .icon.inactive {
+  background-color: var(--red);
+  border: 3px solid var(--red-dark);
+}
+
+.sub .connectionStatus span.active {
+  margin-left: 0.5rem;
+  color: var(--green-dark);
+}
+
+.sub .connectionStatus span.inactive {
+  margin-left: 0.5rem;
+  color: var(--red-dark);
+}
+
 .stats {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1rem;
+
+  margin-top: 3rem;
 }
-.stats div {
-  font-size: 1.2rem;
+.stats .stat {
+  border-width: 8px;
+  border-style: solid;
+
+  width: 30rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+
+  padding: 0.5rem 0;
+  border-radius: 0.5rem;
+
+  position: relative;
 }
+
+.stats .current {
+  transition: border-color 1s ease-in-out, background-color 1s ease-in-out;
+}
+
+.stats .stat .title {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.stats .stat .value {
+  font-size: 160px;
+  font-weight: 900;
+  text-align: center;
+  line-height: 8rem;
+  margin-top: 1rem;
+}
+
+.stats .current .title {
+  color: white;
+}
+
+.stats .current .value {
+  color: white;
+}
+
+.stats .current .arrow {
+  background-image: url("assets/arrow.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 75px;
+  height: 75px;
+
+  position: absolute;
+  bottom: -55px;
+  left: calc(50% - 37.5px);
+
+  z-index: -1;
+}
+
+.stats .current.low {
+  background-color: var(--green);
+  border-color: var(--green-dark);
+}
+
+.stats .current.mid {
+  background-color: var(--orange);
+  border-color: var(--orange-dark);
+}
+
+.stats .current.high {
+  background-color: var(--red);
+  border-color: var(--red-dark);
+}
+
+.scale {
+  position: relative;
+  background-image: url("assets/scale.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  margin-top: 1.5rem;
+  z-index: -2;
+
+  transform: translateX(192px);
+  transition: transform 1s ease-in-out;
+}
+
+.chartContainer {
+  max-width: 1400px;
+  margin: auto;
+  padding: 1rem;
+}
+
 canvas {
   width: 100%;
   height: 300px;

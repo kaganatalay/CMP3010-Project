@@ -1,4 +1,15 @@
 const ctx = document.querySelector(".tempChart").getContext("2d");
+const scale = document.querySelector(".scale");
+const latestUpdate = document.querySelector(".latestUpdate span");
+
+const connectionText = document.querySelector(".connectionStatus span");
+const connectionIcon = document.querySelector(".connectionStatus .icon");
+
+const currentTempContainer = document.querySelector(".stats .current");
+
+const currentTempElement = document.querySelector(".stats .current span.value");
+const maxTempElement = document.querySelector(".stats .highest span.value");
+
 const chart = new Chart(ctx, {
   type: "line",
   data: {
@@ -56,14 +67,30 @@ async function rerender(records) {
   data = records;
 
   const times = data.map((r) => new Date(r.timestamp).toLocaleTimeString());
-  const temps = data.map((r) => r.temperature);
-  const maxTemp = Math.max(...temps);
+  latestUpdate.textContent = `Latest update: ${new Date(
+    data.at(-1).timestamp
+  ).toLocaleString()}`;
 
-  document.querySelector(".currentTemp").textContent =
-    temps.at(-1)?.toFixed(1) ?? "–";
-  document.querySelector(".maxTemp").textContent = isFinite(maxTemp)
-    ? maxTemp.toFixed(1)
-    : "–";
+  const temps = data.map((r) => r.temperature);
+
+  const currentTemp = Math.floor(temps.at(-1));
+  const maxTemp = Math.floor(Math.max(...temps));
+
+  currentTempElement.textContent = currentTemp ?? "–";
+  maxTempElement.textContent = isFinite(maxTemp) ? maxTemp : "–";
+
+  if (currentTemp > 30) {
+    currentTempContainer.classList.add("high");
+    currentTempContainer.classList.remove("mid", "low");
+  } else if (currentTemp > 22) {
+    currentTempContainer.classList.add("mid");
+    currentTempContainer.classList.remove("high", "low");
+  } else {
+    currentTempContainer.classList.add("low");
+    currentTempContainer.classList.remove("high", "mid");
+  }
+
+  scale.style.transform = `translateX(${-96 * (currentTemp - 12)}px)`;
 
   chart.data.labels = times;
   chart.data.datasets[0].data = temps;
@@ -78,6 +105,14 @@ socket.on("connect", () => {
   socket.emit("initialize", (response) => {
     if (response.success) {
       console.log("History:", response.data);
+
+      connectionIcon.classList.remove("inactive");
+      connectionIcon.classList.add("active");
+
+      connectionText.textContent = "Connected";
+      connectionText.classList.remove("inactive");
+      connectionText.classList.add("active");
+
       rerender(response.data);
     } else {
       console.error("Failed to initialize:", response.error);

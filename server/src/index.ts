@@ -26,12 +26,6 @@ db.serialize(() => {
 
 app.get("/", (c) => c.text("Hello World!"));
 
-// app.get("/dashboard", (c) => {
-//   console.log("Serving dashboard");
-//   const html = fs.readFileSync(path.join("public", "index.html"), "utf-8");
-//   return c.body(html, 200, { "Content-Type": "text/html" });
-// });
-
 app.post("/log", async (c) => {
   try {
     const { temperature } = await c.req.json();
