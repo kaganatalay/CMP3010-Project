@@ -1,7 +1,7 @@
 const random = (min, max) => Math.random() * (max - min) + min;
 
 const simulator = () => {
-  fetch("http://localhost:3000/temperature", {
+  fetch("http://localhost:3000/log", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -15,4 +15,4 @@ const simulator = () => {
     .catch((error) => console.error("Error:", error));
 };
 
-setInterval(simulator, 2000);
+setInterval(simulator, 5000);

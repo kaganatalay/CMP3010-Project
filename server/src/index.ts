@@ -1,24 +1,28 @@
-import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import fs from "fs";
 import { logger } from "hono/logger";
-import path from "path";
 import { serveStatic } from "@hono/node-server/serve-static";
+import { serve } from "@hono/node-server";
+import type { Server as HTTPSServer } from "node:http";
+import { Server as SocketIOServer } from "socket.io";
+import sqlite3 from "sqlite3";
 
 export const app = new Hono();
 
 app.use(logger());
 app.use("/public/*", serveStatic({ root: "./src" }));
 
-const DATA_FILE = "./history.json";
-
-async function initDataFile() {
-  try {
-    fs.accessSync(DATA_FILE);
-  } catch {
-    fs.writeFileSync(DATA_FILE, JSON.stringify([]), "utf-8");
-  }
-}
+sqlite3.verbose();
+const db = new sqlite3.Database("main.db");
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS readings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      temperature REAL NOT NULL,
+      timestamp TEXT NOT NULL
+    )
+  `);
+});
 
 app.get("/", (c) => c.text("Hello World!"));
 
@@ -28,18 +32,27 @@ app.get("/", (c) => c.text("Hello World!"));
 //   return c.body(html, 200, { "Content-Type": "text/html" });
 // });
 
-app.post("/temperature", async (c) => {
+app.post("/log", async (c) => {
   try {
     const { temperature } = await c.req.json();
     const timestamp = new Date().toISOString();
-    const record = { temperature, timestamp };
 
-    const file = fs.readFileSync(DATA_FILE, "utf-8");
-    const data = JSON.parse(file);
+    const record = await new Promise((resolve, reject) => {
+      db.run(
+        "INSERT INTO readings (temperature, timestamp) VALUES (?, ?)",
+        [temperature, timestamp],
+        (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            const record = { temperature, timestamp };
+            resolve(record);
+          }
+        }
+      );
+    });
 
-    data.push(record);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
-
+    io.emit("update", record);
     return c.json({ success: true, record });
   } catch (err) {
     console.error("Failed to log temperature", err);
@@ -47,19 +60,31 @@ app.post("/temperature", async (c) => {
   }
 });
 
-app.get("/history", (c) => {
-  const data = JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-  return c.json(data);
+const server = serve(app, (info) => {
+  console.log(`Listening on http://localhost:${info.port}`);
 });
 
-initDataFile().then(() => {
-  serve(
-    {
-      fetch: app.fetch,
-      port: 3000,
-    },
-    (info) => {
-      console.log(`Server is running on http://localhost:${info.port}`);
-    }
-  );
+const io = new SocketIOServer(server as HTTPSServer);
+
+io.on("connection", (socket) => {
+  console.log(`[${socket.id}] - Client connected`);
+
+  socket.on("initialize", (ack) => {
+    console.log(`[${socket.id}] - Client asked to initialize`);
+
+    db.all(
+      "SELECT temperature, timestamp FROM readings ORDER BY timestamp ASC",
+      (err, rows) => {
+        if (err) {
+          ack({ success: false, error: "Database error" });
+          return;
+        }
+        ack({ success: true, data: rows });
+      }
+    );
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`[${socket.id}] - Client disconnected`);
+  });
 });

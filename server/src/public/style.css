@@ -4,12 +4,12 @@ body {
   margin: auto;
   padding: 1rem;
 }
-#stats {
+.stats {
   display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
 }
-#stats div {
+.stats div {
   font-size: 1.2rem;
 }
 canvas {

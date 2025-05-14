@@ -8,10 +8,13 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
-    "hono": "^4.7.9"
+    "hono": "^4.7.9",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "@types/ws": "^8.18.1",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3"
   }
